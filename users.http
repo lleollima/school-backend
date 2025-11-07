@@ -1,0 +1,273 @@
+### Módulo de Usuários - Exemplos de Requisições HTTP
+### Arquivo para usar com REST Client (VSCode Extension) ou similar
+
+### Variáveis
+@baseUrl = http://localhost:3000
+@token = SEU_TOKEN_AQUI
+
+###############################################
+# 1. LOGIN (OBTER TOKEN)
+###############################################
+
+### 1.1 Login como Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@school.com",
+  "password": "admin123"
+}
+
+###############################################
+# 2. CRIAR USUÁRIOS
+###############################################
+
+### 2.1 Criar Student
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@school.com",
+  "password": "senha123",
+  "role": "student"
+}
+
+### 2.2 Criar Teacher
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Maria Professora",
+  "email": "maria.prof@school.com",
+  "password": "senha123",
+  "role": "teacher"
+}
+
+### 2.3 Criar Parent
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Carlos Pai",
+  "email": "carlos.pai@school.com",
+  "password": "senha123",
+  "role": "parent"
+}
+
+### 2.4 Criar Admin
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Outro Admin",
+  "email": "admin2@school.com",
+  "password": "senha123",
+  "role": "admin"
+}
+
+###############################################
+# 3. LISTAR USUÁRIOS
+###############################################
+
+### 3.1 Listar Todos
+GET {{baseUrl}}/users
+Authorization: Bearer {{token}}
+
+### 3.2 Listar Students
+GET {{baseUrl}}/users?role=student
+Authorization: Bearer {{token}}
+
+### 3.3 Listar Teachers
+GET {{baseUrl}}/users?role=teacher
+Authorization: Bearer {{token}}
+
+### 3.4 Listar Parents
+GET {{baseUrl}}/users?role=parent
+Authorization: Bearer {{token}}
+
+### 3.5 Listar Admins
+GET {{baseUrl}}/users?role=admin
+Authorization: Bearer {{token}}
+
+### 3.6 Listar com Paginação (página 1, 5 por página)
+GET {{baseUrl}}/users?page=1&limit=5
+Authorization: Bearer {{token}}
+
+### 3.7 Listar Students com Paginação
+GET {{baseUrl}}/users?role=student&page=1&limit=10
+Authorization: Bearer {{token}}
+
+###############################################
+# 4. BUSCAR USUÁRIO POR ID
+###############################################
+
+### 4.1 Buscar por ID (substitua USER_ID pelo ID real)
+GET {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+
+###############################################
+# 5. ATUALIZAR USUÁRIOS
+###############################################
+
+### 5.1 Atualizar Nome (substitua USER_ID pelo ID real)
+PATCH {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "João da Silva Santos"
+}
+
+### 5.2 Atualizar Email
+PATCH {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "joao.silva@school.com"
+}
+
+### 5.3 Atualizar Senha
+PATCH {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "password": "novasenha123"
+}
+
+### 5.4 Atualizar Role
+PATCH {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "role": "teacher"
+}
+
+### 5.5 Atualizar Múltiplos Campos
+PATCH {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao.novo@school.com",
+  "role": "teacher"
+}
+
+###############################################
+# 6. DELETAR USUÁRIO
+###############################################
+
+### 6.1 Deletar Usuário (substitua USER_ID pelo ID real)
+DELETE {{baseUrl}}/users/USER_ID
+Authorization: Bearer {{token}}
+
+###############################################
+# 7. TESTES DE VALIDAÇÃO (DEVEM FALHAR)
+###############################################
+
+### 7.1 Criar sem Token (401 Unauthorized)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "Teste",
+  "email": "teste@school.com",
+  "password": "senha123",
+  "role": "student"
+}
+
+### 7.2 Email Duplicado (409 Conflict)
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Teste",
+  "email": "admin@school.com",
+  "password": "senha123",
+  "role": "student"
+}
+
+### 7.3 Senha Muito Curta (400 Bad Request)
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Teste",
+  "email": "teste@school.com",
+  "password": "123",
+  "role": "student"
+}
+
+### 7.4 Role Inválido (400 Bad Request)
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Teste",
+  "email": "teste@school.com",
+  "password": "senha123",
+  "role": "superadmin"
+}
+
+### 7.5 Email Inválido (400 Bad Request)
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Teste",
+  "email": "email_invalido",
+  "password": "senha123",
+  "role": "student"
+}
+
+### 7.6 Campos Obrigatórios Faltando (400 Bad Request)
+POST {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Teste"
+}
+
+### 7.7 Buscar ID Inválido (404 Not Found)
+GET {{baseUrl}}/users/000000000000000000000000
+Authorization: Bearer {{token}}
+
+###############################################
+# 8. OUTROS ENDPOINTS (AUTH)
+###############################################
+
+### 8.1 Registrar Novo Usuário (via Auth)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Novo Usuario",
+  "email": "novo@school.com",
+  "password": "senha123"
+}
+
+### 8.2 Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "SEU_REFRESH_TOKEN_AQUI"
+}
+
+### 8.3 Obter Perfil do Usuário Logado
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{token}}
+

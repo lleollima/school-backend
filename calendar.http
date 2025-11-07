@@ -1,0 +1,415 @@
+### Variables
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@eventId = YOUR_EVENT_ID_HERE
+@classId = YOUR_CLASS_ID_HERE
+@userId = YOUR_USER_ID_HERE
+
+### ============================================
+### CALENDAR MODULE - API TESTING
+### ============================================
+
+### 1. Create a meeting event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Parent-Teacher Meeting",
+  "type": "meeting",
+  "description": "Quarterly parent-teacher meeting to discuss student progress",
+  "date": "2024-06-10",
+  "startTime": "14:00",
+  "endTime": "17:00",
+  "location": "Main Auditorium",
+  "priority": "high",
+  "color": "#FF5733",
+  "reminderMinutes": 60
+}
+
+### 2. Create an exam event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Mathematics Final Exam",
+  "type": "exam",
+  "description": "Final exam for Mathematics 101",
+  "date": "2024-06-15",
+  "startTime": "09:00",
+  "endTime": "11:00",
+  "location": "Room 205",
+  "priority": "high",
+  "classes": ["{{classId}}"],
+  "color": "#3498db"
+}
+
+### 3. Create a holiday event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Christmas Holiday",
+  "type": "holiday",
+  "description": "School closed for Christmas",
+  "date": "2024-12-25",
+  "allDay": true,
+  "color": "#e74c3c"
+}
+
+### 4. Create a multi-day event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Science Fair",
+  "type": "event",
+  "description": "Annual science fair",
+  "date": "2024-07-10",
+  "endDate": "2024-07-12",
+  "allDay": true,
+  "location": "School Gymnasium",
+  "priority": "medium",
+  "color": "#2ecc71"
+}
+
+### 5. Create a deadline event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Project Submission Deadline",
+  "type": "deadline",
+  "description": "Final project submission for all students",
+  "date": "2024-06-30",
+  "priority": "high",
+  "classes": ["{{classId}}"],
+  "color": "#f39c12",
+  "reminderMinutes": 1440
+}
+
+### 6. Create event with participants
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Staff Meeting",
+  "type": "meeting",
+  "date": "2024-06-05",
+  "startTime": "10:00",
+  "endTime": "12:00",
+  "location": "Conference Room",
+  "participants": ["{{userId}}"],
+  "priority": "medium"
+}
+
+### 7. Get all events
+GET {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+
+### 8. Get events with filters (exams only)
+GET {{baseUrl}}/calendar?type=exam
+Authorization: Bearer {{token}}
+
+### 9. Get events by date range
+GET {{baseUrl}}/calendar?startDate=2024-06-01&endDate=2024-06-30
+Authorization: Bearer {{token}}
+
+### 10. Get events sorted by priority
+GET {{baseUrl}}/calendar?sortBy=priority&sortOrder=desc
+Authorization: Bearer {{token}}
+
+### 11. Get upcoming events
+GET {{baseUrl}}/calendar/upcoming
+Authorization: Bearer {{token}}
+
+### 12. Get upcoming events (limit 5)
+GET {{baseUrl}}/calendar/upcoming?limit=5
+Authorization: Bearer {{token}}
+
+### 13. Get events for a specific month (June 2024)
+GET {{baseUrl}}/calendar/month/2024/6
+Authorization: Bearer {{token}}
+
+### 14. Get events by type (meetings)
+GET {{baseUrl}}/calendar/type/meeting
+Authorization: Bearer {{token}}
+
+### 15. Get all holidays
+GET {{baseUrl}}/calendar/holidays
+Authorization: Bearer {{token}}
+
+### 16. Get holidays for specific year
+GET {{baseUrl}}/calendar/holidays?year=2024
+Authorization: Bearer {{token}}
+
+### 17. Get all exams
+GET {{baseUrl}}/calendar/exams
+Authorization: Bearer {{token}}
+
+### 18. Get exams for specific class
+GET {{baseUrl}}/calendar/exams?classId={{classId}}
+Authorization: Bearer {{token}}
+
+### 19. Get events for a specific class
+GET {{baseUrl}}/calendar/class/{{classId}}
+Authorization: Bearer {{token}}
+
+### 20. Get events for a specific user
+GET {{baseUrl}}/calendar/user/{{userId}}
+Authorization: Bearer {{token}}
+
+### 21. Get event statistics
+GET {{baseUrl}}/calendar/stats
+Authorization: Bearer {{token}}
+
+### 22. Get event statistics with date range
+GET {{baseUrl}}/calendar/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 23. Get a specific event by ID
+GET {{baseUrl}}/calendar/{{eventId}}
+Authorization: Bearer {{token}}
+
+### 24. Update an event
+PATCH {{baseUrl}}/calendar/{{eventId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Updated Event Title",
+  "priority": "high",
+  "location": "New Location"
+}
+
+### 25. Update event time
+PATCH {{baseUrl}}/calendar/{{eventId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "startTime": "10:00",
+  "endTime": "12:00"
+}
+
+### 26. Delete an event
+DELETE {{baseUrl}}/calendar/{{eventId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### RECURRING EVENTS
+### ============================================
+
+### 27. Create weekly recurring event
+POST {{baseUrl}}/calendar/recurring
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "event": {
+    "title": "Weekly Team Meeting",
+    "type": "meeting",
+    "date": "2024-01-08",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "location": "Room 101",
+    "isRecurring": true,
+    "recurrencePattern": "weekly",
+    "recurrenceEndDate": "2024-12-31",
+    "color": "#9b59b6"
+  },
+  "occurrences": 50
+}
+
+### 28. Create monthly recurring event
+POST {{baseUrl}}/calendar/recurring
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "event": {
+    "title": "Monthly Board Meeting",
+    "type": "meeting",
+    "date": "2024-01-15",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "isRecurring": true,
+    "recurrencePattern": "monthly",
+    "recurrenceEndDate": "2024-12-31",
+    "priority": "high"
+  },
+  "occurrences": 12
+}
+
+### ============================================
+### CONFLICT DETECTION
+### ============================================
+
+### 29. Check for conflicting events
+POST {{baseUrl}}/calendar/check-conflicts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2024-06-15",
+  "startTime": "09:00",
+  "endTime": "11:00"
+}
+
+### 30. Check conflicts excluding specific event
+POST {{baseUrl}}/calendar/check-conflicts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2024-06-15",
+  "startTime": "09:00",
+  "endTime": "11:00",
+  "excludeEventId": "{{eventId}}"
+}
+
+### ============================================
+### ERROR SCENARIOS
+### ============================================
+
+### 31. Try to create event without required fields
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Incomplete Event"
+}
+
+### 32. Try to create event with invalid type
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Invalid Event",
+  "type": "invalid_type",
+  "date": "2024-06-15"
+}
+
+### 33. Try to create event with invalid time format
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Invalid Time",
+  "type": "meeting",
+  "date": "2024-06-15",
+  "startTime": "25:00"
+}
+
+### 34. Try to create event with invalid color
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Invalid Color",
+  "type": "meeting",
+  "date": "2024-06-15",
+  "color": "red"
+}
+
+### 35. Try to create event with end date before start date
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Invalid Dates",
+  "type": "event",
+  "date": "2024-06-20",
+  "endDate": "2024-06-15"
+}
+
+### 36. Try to get events without authentication
+GET {{baseUrl}}/calendar
+
+### ============================================
+### DIFFERENT EVENT TYPES
+### ============================================
+
+### 37. Create class event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Advanced Mathematics Class",
+  "type": "class",
+  "date": "2024-06-12",
+  "startTime": "08:00",
+  "endTime": "09:30",
+  "location": "Room 301",
+  "classes": ["{{classId}}"],
+  "color": "#3498db"
+}
+
+### 38. Create school event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Sports Day",
+  "type": "event",
+  "description": "Annual sports day for all students",
+  "date": "2024-09-15",
+  "allDay": true,
+  "location": "Sports Field",
+  "priority": "high",
+  "color": "#e67e22"
+}
+
+### 39. Create other type event
+POST {{baseUrl}}/calendar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "School Maintenance",
+  "type": "other",
+  "date": "2024-07-20",
+  "allDay": true,
+  "description": "Building maintenance day - no classes"
+}
+
+### ============================================
+### FILTERING AND SEARCHING
+### ============================================
+
+### 40. Get high priority events only
+GET {{baseUrl}}/calendar?priority=high
+Authorization: Bearer {{token}}
+
+### 41. Get events for specific class in date range
+GET {{baseUrl}}/calendar?classId={{classId}}&startDate=2024-06-01&endDate=2024-06-30
+Authorization: Bearer {{token}}
+
+### 42. Get events sorted by date (ascending)
+GET {{baseUrl}}/calendar?sortBy=date&sortOrder=asc
+Authorization: Bearer {{token}}
+
+### 43. Get events sorted by title
+GET {{baseUrl}}/calendar?sortBy=title&sortOrder=asc
+Authorization: Bearer {{token}}
+
+### 44. Get deadlines only
+GET {{baseUrl}}/calendar/type/deadline
+Authorization: Bearer {{token}}
+
+### 45. Get all meetings
+GET {{baseUrl}}/calendar/type/meeting
+Authorization: Bearer {{token}}
+

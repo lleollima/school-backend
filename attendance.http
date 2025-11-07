@@ -1,0 +1,270 @@
+### Variables
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@classId = YOUR_CLASS_ID_HERE
+@studentId = YOUR_STUDENT_ID_HERE
+@attendanceId = YOUR_ATTENDANCE_ID_HERE
+@date = 2024-01-15
+
+### ============================================
+### ATTENDANCE MODULE - API TESTING
+### ============================================
+
+### 1. Mark attendance for a single student (Present)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "present",
+  "latitude": -23.5505,
+  "longitude": -46.6333,
+  "notes": "Arrived on time"
+}
+
+### 2. Mark attendance (Absent)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "absent",
+  "notes": "No notification provided"
+}
+
+### 3. Mark attendance (Late)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "late",
+  "notes": "Arrived 15 minutes late"
+}
+
+### 4. Mark attendance (Excused)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "excused",
+  "notes": "Medical appointment"
+}
+
+### 5. Bulk mark attendance for multiple students
+POST {{baseUrl}}/attendance/{{classId}}/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[
+  {
+    "student": "64f5a9b1234567890abcdef1",
+    "date": "{{date}}",
+    "status": "present"
+  },
+  {
+    "student": "64f5a9b1234567890abcdef2",
+    "date": "{{date}}",
+    "status": "absent"
+  },
+  {
+    "student": "64f5a9b1234567890abcdef3",
+    "date": "{{date}}",
+    "status": "late",
+    "notes": "Traffic delay"
+  },
+  {
+    "student": "64f5a9b1234567890abcdef4",
+    "date": "{{date}}",
+    "status": "excused",
+    "notes": "Sick leave"
+  }
+]
+
+### 6. Get attendance for a student (all records)
+GET {{baseUrl}}/attendance/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+### 7. Get attendance for a student with date range filter
+GET {{baseUrl}}/attendance/student/{{studentId}}?startDate=2024-01-01&endDate=2024-01-31
+Authorization: Bearer {{token}}
+
+### 8. Get attendance for a student filtered by status (absent only)
+GET {{baseUrl}}/attendance/student/{{studentId}}?status=absent
+Authorization: Bearer {{token}}
+
+### 9. Get attendance for a student with multiple filters
+GET {{baseUrl}}/attendance/student/{{studentId}}?startDate=2024-01-01&endDate=2024-01-31&status=present&sortBy=date&sortOrder=desc
+Authorization: Bearer {{token}}
+
+### 10. Get attendance statistics for a student
+GET {{baseUrl}}/attendance/student/{{studentId}}/stats
+Authorization: Bearer {{token}}
+
+### 11. Get attendance statistics for a student with date range
+GET {{baseUrl}}/attendance/student/{{studentId}}/stats?startDate=2024-01-01&endDate=2024-01-31
+Authorization: Bearer {{token}}
+
+### 12. Get attendance for a class on a specific date
+GET {{baseUrl}}/attendance/class/{{classId}}/date/{{date}}
+Authorization: Bearer {{token}}
+
+### 13. Get all attendance records for a class
+GET {{baseUrl}}/attendance/class/{{classId}}
+Authorization: Bearer {{token}}
+
+### 14. Get attendance for a class with filters
+GET {{baseUrl}}/attendance/class/{{classId}}?startDate=2024-01-01&endDate=2024-01-31&status=absent
+Authorization: Bearer {{token}}
+
+### 15. Get attendance statistics for a class on a specific date
+GET {{baseUrl}}/attendance/class/{{classId}}/stats/{{date}}
+Authorization: Bearer {{token}}
+
+### 16. Delete an attendance record (Admin only)
+DELETE {{baseUrl}}/attendance/{{attendanceId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR SCENARIOS
+### ============================================
+
+### 17. Try to mark attendance with invalid status
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "invalid_status"
+}
+
+### 18. Try to mark attendance with invalid date
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "invalid-date",
+  "status": "present"
+}
+
+### 19. Try to mark attendance without required fields
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}"
+}
+
+### 20. Try to mark attendance with invalid coordinates
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "present",
+  "latitude": 200,
+  "longitude": 300
+}
+
+### 21. Try to get attendance without authentication
+GET {{baseUrl}}/attendance/student/{{studentId}}
+
+### ============================================
+### UPDATE SCENARIOS (same day = update)
+### ============================================
+
+### 22. Update attendance status (mark same student, same date, same class)
+# This will UPDATE the existing record instead of creating a duplicate
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "present",
+  "notes": "Updated - Student arrived after being marked absent"
+}
+
+### ============================================
+### LOCATION-BASED SCENARIOS
+### ============================================
+
+### 23. Mark attendance with GPS coordinates (São Paulo)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "present",
+  "latitude": -23.5505,
+  "longitude": -46.6333,
+  "notes": "Location verified - Av. Paulista"
+}
+
+### 24. Mark attendance with GPS coordinates (Rio de Janeiro)
+POST {{baseUrl}}/attendance/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "date": "{{date}}",
+  "status": "present",
+  "latitude": -22.9068,
+  "longitude": -43.1729,
+  "notes": "Location verified - Copacabana"
+}
+
+### ============================================
+### FUTURE FEATURE - LOCATION VERIFICATION
+### ============================================
+
+### 25. Verify location-based attendance (Coming Soon)
+# POST {{baseUrl}}/attendance/{{classId}}/verify-location
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+#
+# {
+#   "latitude": -23.5505,
+#   "longitude": -46.6333
+# }
+
+### ============================================
+### STATISTICS AND REPORTS
+### ============================================
+
+### 26. Get monthly attendance report for student
+GET {{baseUrl}}/attendance/student/{{studentId}}?startDate=2024-01-01&endDate=2024-01-31&sortBy=date&sortOrder=asc
+Authorization: Bearer {{token}}
+
+### 27. Get yearly attendance stats for student
+GET {{baseUrl}}/attendance/student/{{studentId}}/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 28. Get all absent records for a student
+GET {{baseUrl}}/attendance/student/{{studentId}}?status=absent&sortBy=date&sortOrder=desc
+Authorization: Bearer {{token}}
+
+### 29. Get class attendance summary for the week
+GET {{baseUrl}}/attendance/class/{{classId}}?startDate=2024-01-15&endDate=2024-01-19&sortBy=date&sortOrder=asc
+Authorization: Bearer {{token}}
+

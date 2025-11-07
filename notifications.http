@@ -1,0 +1,414 @@
+### Variables
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@userId = YOUR_USER_ID_HERE
+@notificationId = YOUR_NOTIFICATION_ID_HERE
+
+### ============================================
+### NOTIFICATIONS MODULE - API TESTING
+### ============================================
+
+### 1. Send email notification
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "student@example.com",
+  "subject": "Welcome to Our School System",
+  "body": "Welcome! Your account has been successfully created.",
+  "userId": "{{userId}}"
+}
+
+### 2. Send email with HTML
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "parent@example.com",
+  "subject": "Important Notice",
+  "body": "This is an important message",
+  "html": "<h1>Important Notice</h1><p>This is an <strong>important</strong> message.</p>",
+  "userId": "{{userId}}"
+}
+
+### 3. Send push notification
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "New Grade Available",
+  "message": "Your grade for Mathematics has been posted",
+  "icon": "grade",
+  "link": "/grades/123"
+}
+
+### 4. Send push notification with custom icon
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "Payment Due Soon",
+  "message": "Your monthly payment is due in 3 days",
+  "icon": "payment",
+  "link": "/finance/payments"
+}
+
+### 5. Send WhatsApp message
+POST {{baseUrl}}/notifications/whatsapp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "+5511999999999",
+  "message": "Reminder: Your payment is due tomorrow. Please visit our website to pay.",
+  "userId": "{{userId}}"
+}
+
+### 6. Send WhatsApp with media
+POST {{baseUrl}}/notifications/whatsapp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "+5511999999999",
+  "message": "Check out this important document",
+  "userId": "{{userId}}",
+  "mediaUrl": "https://example.com/document.pdf"
+}
+
+### 7. Get my notifications
+GET {{baseUrl}}/notifications/me
+Authorization: Bearer {{token}}
+
+### 8. Get unread count
+GET {{baseUrl}}/notifications/me/unread-count
+Authorization: Bearer {{token}}
+
+### 9. Mark notification as read
+PATCH {{baseUrl}}/notifications/{{notificationId}}/read
+Authorization: Bearer {{token}}
+
+### 10. Mark all notifications as read
+PATCH {{baseUrl}}/notifications/me/read-all
+Authorization: Bearer {{token}}
+
+### 11. Delete a notification
+DELETE {{baseUrl}}/notifications/{{notificationId}}
+Authorization: Bearer {{token}}
+
+### 12. Send bulk notifications
+POST {{baseUrl}}/notifications/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userIds": ["userId1", "userId2", "userId3"],
+  "title": "Important School Announcement",
+  "message": "School will be closed tomorrow due to maintenance",
+  "type": "push"
+}
+
+### 13. Get notification statistics
+GET {{baseUrl}}/notifications/stats
+Authorization: Bearer {{token}}
+
+### ============================================
+### AUTOMATED NOTIFICATIONS
+### ============================================
+
+### 14. Send overdue payment notification
+POST {{baseUrl}}/notifications/payment/overdue
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "paymentDetails": {
+    "amount": 500,
+    "dueDate": "2024-01-10",
+    "description": "January Tuition"
+  }
+}
+
+### 15. Send upcoming payment notification
+POST {{baseUrl}}/notifications/payment/upcoming
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "paymentDetails": {
+    "amount": 500,
+    "dueDate": "2024-02-10",
+    "description": "February Tuition"
+  }
+}
+
+### 16. Send low attendance notification
+POST {{baseUrl}}/notifications/attendance/low
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "attendanceRate": 65
+}
+
+### 17. Send new grade notification
+POST {{baseUrl}}/notifications/grade/new
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "gradeDetails": {
+    "subject": "Mathematics",
+    "score": 85,
+    "term": "Q1 2024"
+  }
+}
+
+### 18. Send event reminder notification
+POST {{baseUrl}}/notifications/event/reminder
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "eventDetails": {
+    "title": "Parent-Teacher Meeting",
+    "date": "2024-02-15",
+    "location": "Main Auditorium"
+  }
+}
+
+### ============================================
+### ERROR SCENARIOS
+### ============================================
+
+### 19. Try to send email without required fields
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "Test Email"
+}
+
+### 20. Try to send email with invalid email
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "invalid-email",
+  "subject": "Test",
+  "body": "Test message"
+}
+
+### 21. Try to send push without userId
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Test",
+  "message": "Test message"
+}
+
+### 22. Try to send WhatsApp with invalid phone
+POST {{baseUrl}}/notifications/whatsapp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "invalid-phone",
+  "message": "Test message"
+}
+
+### 23. Try to access notifications without authentication
+GET {{baseUrl}}/notifications/me
+
+### ============================================
+### BULK OPERATIONS
+### ============================================
+
+### 24. Send bulk email notifications
+POST {{baseUrl}}/notifications/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userIds": ["userId1", "userId2", "userId3", "userId4", "userId5"],
+  "title": "Holiday Notification",
+  "message": "School will be closed for Christmas holidays from Dec 24 to Jan 2",
+  "type": "email"
+}
+
+### 25. Send bulk push notifications
+POST {{baseUrl}}/notifications/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userIds": ["userId1", "userId2", "userId3"],
+  "title": "New Feature Available",
+  "message": "Check out our new mobile app!",
+  "type": "push"
+}
+
+### ============================================
+### MULTIPLE NOTIFICATION TYPES
+### ============================================
+
+### 26. Send welcome email to new user
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "newstudent@example.com",
+  "subject": "Welcome to ABC School",
+  "body": "Welcome to our school! We're excited to have you join us.",
+  "html": "<h1>Welcome!</h1><p>We're excited to have you join ABC School.</p><p>Your login credentials:</p><ul><li>Username: newstudent@example.com</li><li>Password: (check your SMS)</li></ul>",
+  "userId": "{{userId}}"
+}
+
+### 27. Send grade notification
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "Grade Posted",
+  "message": "Mathematics - Final Exam: 92/100",
+  "icon": "grade",
+  "link": "/grades"
+}
+
+### 28. Send absence notification
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "Absence Recorded",
+  "message": "Your child was marked absent today. Please contact the school if this is an error.",
+  "icon": "warning"
+}
+
+### 29. Send payment confirmation
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "parent@example.com",
+  "subject": "Payment Confirmation",
+  "body": "Your payment of R$ 500 has been received. Thank you!",
+  "userId": "{{userId}}"
+}
+
+### 30. Send event invitation
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "You're Invited!",
+  "message": "Annual Sports Day - February 20th. Click to RSVP",
+  "icon": "event",
+  "link": "/events/sports-day"
+}
+
+### ============================================
+### NOTIFICATION MANAGEMENT
+### ============================================
+
+### 31. Get all my notifications (paginated)
+GET {{baseUrl}}/notifications/me
+Authorization: Bearer {{token}}
+
+### 32. Get unread notifications count
+GET {{baseUrl}}/notifications/me/unread-count
+Authorization: Bearer {{token}}
+
+### 33. Mark specific notification as read
+PATCH {{baseUrl}}/notifications/{{notificationId}}/read
+Authorization: Bearer {{token}}
+
+### 34. Mark all as read
+PATCH {{baseUrl}}/notifications/me/read-all
+Authorization: Bearer {{token}}
+
+### 35. Delete old notification
+DELETE {{baseUrl}}/notifications/{{notificationId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### ADMIN OPERATIONS
+### ============================================
+
+### 36. Get notification statistics
+GET {{baseUrl}}/notifications/stats
+Authorization: Bearer {{token}}
+
+### 37. Send system-wide announcement
+POST {{baseUrl}}/notifications/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userIds": ["all-users-ids-here"],
+  "title": "System Maintenance",
+  "message": "The system will be down for maintenance on Saturday from 2 AM to 6 AM",
+  "type": "push"
+}
+
+### ============================================
+### INTEGRATION TESTS
+### ============================================
+
+### 38. Test email sending
+POST {{baseUrl}}/notifications/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "to": "test@example.com",
+  "subject": "Test Email from Notification System",
+  "body": "This is a test email to verify the notification system is working correctly.",
+  "userId": "{{userId}}"
+}
+
+### 39. Test push notification
+POST {{baseUrl}}/notifications/push
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "title": "Test Push Notification",
+  "message": "This is a test push notification"
+}
+
+### 40. Test WhatsApp message
+POST {{baseUrl}}/notifications/whatsapp
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "+5511999999999",
+  "message": "This is a test WhatsApp message from the notification system",
+  "userId": "{{userId}}"
+}
+

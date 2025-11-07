@@ -1,0 +1,124 @@
+### Variables
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@classId = YOUR_CLASS_ID_HERE
+@studentId = YOUR_STUDENT_ID_HERE
+@gradeId = YOUR_GRADE_ID_HERE
+
+### ============================================
+### GRADES MODULE - API TESTING
+### ============================================
+
+### 1. Add a new grade to a class
+POST {{baseUrl}}/grades/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "subject": "Mathematics",
+  "score": 85,
+  "term": "Q1 2024"
+}
+
+### 2. Add another grade with different subject
+POST {{baseUrl}}/grades/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "subject": "Science",
+  "score": 92,
+  "term": "Q1 2024"
+}
+
+### 3. Get all grades for a student
+GET {{baseUrl}}/grades/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+### 4. Get all grades for a class
+GET {{baseUrl}}/grades/class/{{classId}}
+Authorization: Bearer {{token}}
+
+### 5. Get a specific grade by ID
+GET {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+
+### 6. Update a grade
+PATCH {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "score": 95,
+  "term": "Q2 2024"
+}
+
+### 7. Update only the score
+PATCH {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "score": 88
+}
+
+### 8. Delete a grade (Admin only)
+DELETE {{baseUrl}}/grades/{{gradeId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR SCENARIOS
+### ============================================
+
+### 9. Try to add grade with invalid score (> 100)
+POST {{baseUrl}}/grades/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "subject": "Mathematics",
+  "score": 150,
+  "term": "Q1 2024"
+}
+
+### 10. Try to add grade with invalid score (< 0)
+POST {{baseUrl}}/grades/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "subject": "Mathematics",
+  "score": -10,
+  "term": "Q1 2024"
+}
+
+### 11. Try to add grade without required fields
+POST {{baseUrl}}/grades/{{classId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "subject": "Mathematics"
+}
+
+### 12. Try to get grades without authentication
+GET {{baseUrl}}/grades/student/{{studentId}}
+
+### ============================================
+### FUTURE FEATURE - AI OCR UPLOAD
+### ============================================
+
+### 13. AI Upload (Coming Soon)
+# POST {{baseUrl}}/grades/ai-upload
+# Authorization: Bearer {{token}}
+# Content-Type: multipart/form-data
+#
+# {
+#   "file": "grade-sheet.pdf",
+#   "classId": "{{classId}}"
+# }
+

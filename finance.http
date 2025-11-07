@@ -1,0 +1,385 @@
+### Variables
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@studentId = YOUR_STUDENT_ID_HERE
+@paymentId = YOUR_PAYMENT_ID_HERE
+
+### ============================================
+### FINANCE MODULE - API TESTING
+### ============================================
+
+### 1. Create a single payment (tuition)
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 500.00,
+  "dueDate": "2024-02-10",
+  "description": "Mensalidade - Fevereiro 2024",
+  "type": "tuition",
+  "referenceMonth": "2024-02",
+  "referenceYear": 2024
+}
+
+### 2. Create a registration fee payment
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 200.00,
+  "dueDate": "2024-01-05",
+  "description": "Taxa de matrícula 2024",
+  "type": "registration"
+}
+
+### 3. Create payment with discount
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 500.00,
+  "dueDate": "2024-03-10",
+  "description": "Mensalidade - Março 2024",
+  "type": "tuition",
+  "discount": 50.00,
+  "notes": "Desconto de pontualidade"
+}
+
+### 4. Create bulk payments
+POST {{baseUrl}}/finance/payments/bulk
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[
+  {
+    "student": "{{studentId}}",
+    "amount": 500.00,
+    "dueDate": "2024-01-10",
+    "type": "tuition",
+    "referenceMonth": "2024-01"
+  },
+  {
+    "student": "{{studentId}}",
+    "amount": 500.00,
+    "dueDate": "2024-02-10",
+    "type": "tuition",
+    "referenceMonth": "2024-02"
+  },
+  {
+    "student": "{{studentId}}",
+    "amount": 500.00,
+    "dueDate": "2024-03-10",
+    "type": "tuition",
+    "referenceMonth": "2024-03"
+  }
+]
+
+### 5. Get all payments
+GET {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+
+### 6. Get payments with filters (pending only)
+GET {{baseUrl}}/finance/payments?status=pending
+Authorization: Bearer {{token}}
+
+### 7. Get payments by type (tuition)
+GET {{baseUrl}}/finance/payments?type=tuition
+Authorization: Bearer {{token}}
+
+### 8. Get payments by date range
+GET {{baseUrl}}/finance/payments?startDate=2024-01-01&endDate=2024-03-31
+Authorization: Bearer {{token}}
+
+### 9. Get payments for specific student
+GET {{baseUrl}}/finance/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+### 10. Get pending payments for student
+GET {{baseUrl}}/finance/student/{{studentId}}/pending
+Authorization: Bearer {{token}}
+
+### 11. Get a specific payment by ID
+GET {{baseUrl}}/finance/payments/{{paymentId}}
+Authorization: Bearer {{token}}
+
+### 12. Update payment status
+PATCH {{baseUrl}}/finance/payments/{{paymentId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "paid",
+  "paymentDate": "2024-01-08",
+  "paymentMethod": "pix",
+  "transactionId": "PIX-123456789"
+}
+
+### 13. Mark payment as paid (simplified)
+POST {{baseUrl}}/finance/payments/{{paymentId}}/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "pix",
+  "transactionId": "PIX-987654321"
+}
+
+### 14. Update payment with late fees
+PATCH {{baseUrl}}/finance/payments/{{paymentId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "paid",
+  "paymentDate": "2024-01-20",
+  "paymentMethod": "credit_card",
+  "fine": 10.00,
+  "interest": 5.00
+}
+
+### 15. Calculate late fees for a payment
+POST {{baseUrl}}/finance/late-fees/{{paymentId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentDate": "2024-01-20"
+}
+
+### 16. Get financial statistics
+GET {{baseUrl}}/finance/stats
+Authorization: Bearer {{token}}
+
+### 17. Get financial statistics with date range
+GET {{baseUrl}}/finance/stats?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 18. Get revenue by month for 2024
+GET {{baseUrl}}/finance/revenue/2024
+Authorization: Bearer {{token}}
+
+### 19. Update overdue payments status
+POST {{baseUrl}}/finance/overdue/update
+Authorization: Bearer {{token}}
+
+### 20. Generate monthly payments for a student
+POST {{baseUrl}}/finance/generate-monthly
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "studentId": "{{studentId}}",
+  "amount": 500.00,
+  "startMonth": "2024-01",
+  "numberOfMonths": 12,
+  "dayOfMonth": 10
+}
+
+### 21. Delete a payment
+DELETE {{baseUrl}}/finance/payments/{{paymentId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR SCENARIOS
+### ============================================
+
+### 22. Try to create payment with invalid amount
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": -100,
+  "dueDate": "2024-02-10"
+}
+
+### 23. Try to create payment without required fields
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}"
+}
+
+### 24. Try to get payments without authentication
+GET {{baseUrl}}/finance/payments
+
+### 25. Try to update non-existent payment
+PATCH {{baseUrl}}/finance/payments/000000000000000000000000
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "paid"
+}
+
+### ============================================
+### PAYMENT METHODS SCENARIOS
+### ============================================
+
+### 26. Payment via Pix
+POST {{baseUrl}}/finance/payments/{{paymentId}}/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "pix",
+  "transactionId": "PIX-ABC123XYZ"
+}
+
+### 27. Payment via Credit Card
+POST {{baseUrl}}/finance/payments/{{paymentId}}/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "credit_card",
+  "transactionId": "CC-456789"
+}
+
+### 28. Payment via Bank Transfer
+POST {{baseUrl}}/finance/payments/{{paymentId}}/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "bank_transfer",
+  "transactionId": "TRF-789012"
+}
+
+### 29. Payment in Cash
+POST {{baseUrl}}/finance/payments/{{paymentId}}/pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "cash"
+}
+
+### ============================================
+### DIFFERENT PAYMENT TYPES
+### ============================================
+
+### 30. Create material fee payment
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 150.00,
+  "dueDate": "2024-02-01",
+  "description": "Material escolar",
+  "type": "material"
+}
+
+### 31. Create exam fee payment
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 80.00,
+  "dueDate": "2024-06-15",
+  "description": "Taxa de exame final",
+  "type": "exam"
+}
+
+### 32. Create activity fee payment
+POST {{baseUrl}}/finance/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "student": "{{studentId}}",
+  "amount": 120.00,
+  "dueDate": "2024-03-01",
+  "description": "Atividades extracurriculares",
+  "type": "activity"
+}
+
+### ============================================
+### FILTERING AND SORTING
+### ============================================
+
+### 33. Get payments sorted by amount (descending)
+GET {{baseUrl}}/finance/payments?sortBy=amount&sortOrder=desc
+Authorization: Bearer {{token}}
+
+### 34. Get payments sorted by due date (ascending)
+GET {{baseUrl}}/finance/payments?sortBy=dueDate&sortOrder=asc
+Authorization: Bearer {{token}}
+
+### 35. Get late payments only
+GET {{baseUrl}}/finance/payments?status=late
+Authorization: Bearer {{token}}
+
+### 36. Get overdue payments only
+GET {{baseUrl}}/finance/payments?status=overdue
+Authorization: Bearer {{token}}
+
+### 37. Get paid payments in a date range
+GET {{baseUrl}}/finance/payments?status=paid&startDate=2024-01-01&endDate=2024-01-31
+Authorization: Bearer {{token}}
+
+### 38. Get payments for a specific reference month
+GET {{baseUrl}}/finance/payments?referenceMonth=2024-01
+Authorization: Bearer {{token}}
+
+### 39. Get payments for a specific year
+GET {{baseUrl}}/finance/payments?referenceYear=2024
+Authorization: Bearer {{token}}
+
+### ============================================
+### FUTURE FEATURES - PIX & MERCADOPAGO
+### ============================================
+
+### 40. Process Pix payment (Coming Soon)
+# POST {{baseUrl}}/finance/payments/{{paymentId}}/pix
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+#
+# {
+#   "qrCode": "...",
+#   "txid": "..."
+# }
+
+### 41. Process MercadoPago payment (Coming Soon)
+# POST {{baseUrl}}/finance/payments/{{paymentId}}/mercadopago
+# Authorization: Bearer {{token}}
+# Content-Type: application/json
+#
+# {
+#   "preferenceId": "...",
+#   "paymentId": "..."
+# }
+
+### ============================================
+### REPORTING
+### ============================================
+
+### 42. Get all pending payments across all students
+GET {{baseUrl}}/finance/payments?status=pending&sortBy=dueDate&sortOrder=asc
+Authorization: Bearer {{token}}
+
+### 43. Get revenue for current month
+GET {{baseUrl}}/finance/payments?status=paid&startDate=2024-01-01&endDate=2024-01-31
+Authorization: Bearer {{token}}
+
+### 44. Get tuition payments only
+GET {{baseUrl}}/finance/payments?type=tuition&sortBy=dueDate
+Authorization: Bearer {{token}}
+
+### 45. Get complete student financial history
+GET {{baseUrl}}/finance/student/{{studentId}}?sortBy=dueDate&sortOrder=asc
+Authorization: Bearer {{token}}
+

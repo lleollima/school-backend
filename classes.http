@@ -1,0 +1,127 @@
+### Classes Module - HTTP Requests
+### Arquivo para testar os endpoints do módulo de turmas
+
+@baseUrl = http://localhost:3000
+@token = YOUR_JWT_TOKEN_HERE
+@classId = CLASS_ID_HERE
+@teacherId = TEACHER_ID_HERE
+@studentId = STUDENT_ID_HERE
+
+###############################################
+# 1. CREATE CLASS
+###############################################
+
+### Criar nova turma (Admin/Teacher)
+POST {{baseUrl}}/classes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Matemática Avançada - 2024",
+  "year": 2024,
+  "teacher": "{{teacherId}}"
+}
+
+### Criar turma sem professor
+POST {{baseUrl}}/classes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "História - Turma A",
+  "year": 2024
+}
+
+###############################################
+# 2. GET ALL CLASSES
+###############################################
+
+### Listar todas as turmas
+GET {{baseUrl}}/classes
+Authorization: Bearer {{token}}
+
+###############################################
+# 3. GET CLASS BY ID
+###############################################
+
+### Obter turma por ID
+GET {{baseUrl}}/classes/{{classId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# 4. UPDATE CLASS
+###############################################
+
+### Atualizar turma
+PUT {{baseUrl}}/classes/{{classId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Matemática Avançada - 2025",
+  "year": 2025
+}
+
+### Atualizar apenas o nome
+PUT {{baseUrl}}/classes/{{classId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nova Nome da Turma"
+}
+
+###############################################
+# 5. ASSIGN TEACHER
+###############################################
+
+### Atribuir professor à turma (Admin only)
+POST {{baseUrl}}/classes/{{classId}}/teacher/{{teacherId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# 6. ADD STUDENT
+###############################################
+
+### Adicionar estudante à turma (Admin/Teacher)
+POST {{baseUrl}}/classes/{{classId}}/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# 7. REMOVE STUDENT
+###############################################
+
+### Remover estudante da turma (Admin/Teacher)
+DELETE {{baseUrl}}/classes/{{classId}}/student/{{studentId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# 8. DELETE CLASS
+###############################################
+
+### Deletar turma (Admin only)
+DELETE {{baseUrl}}/classes/{{classId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# FLUXO COMPLETO DE EXEMPLO
+###############################################
+
+### 1. Criar turma
+# POST {{baseUrl}}/classes
+# Body: { "name": "Física 2024", "year": 2024 }
+# Copiar o _id retornado e colocar em @classId
+
+### 2. Atribuir professor
+# POST {{baseUrl}}/classes/{{classId}}/teacher/{{teacherId}}
+
+### 3. Adicionar estudantes
+# POST {{baseUrl}}/classes/{{classId}}/student/{{studentId1}}
+# POST {{baseUrl}}/classes/{{classId}}/student/{{studentId2}}
+
+### 4. Listar turmas e verificar populate
+# GET {{baseUrl}}/classes
+
+### 5. Ver detalhes da turma
+# GET {{baseUrl}}/classes/{{classId}}
+

@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { SeederService } from './seeder.service';
 import { UserSeeder } from './user.seeder';
+import { AdminSeeder } from './admin.seeder';
 import { User, UserSchema } from '../../modules/auth/schemas/user.schema';
 
 @Module({
@@ -19,6 +20,7 @@ import { User, UserSchema } from '../../modules/auth/schemas/user.schema';
   providers: [
     SeederService,
     UserSeeder,
+    AdminSeeder,
     // Adicione outros seeders aqui
     // StudentSeeder,
     // TeacherSeeder,

@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { UserSeeder } from './user.seeder';
+import { AdminSeeder } from './admin.seeder';
 
 @Injectable()
 export class SeederService {
   constructor(
     private readonly userSeeder: UserSeeder,
+    private readonly adminSeeder: AdminSeeder,
     // Adicione outros seeders aqui conforme forem criados
     // private readonly studentSeeder: StudentSeeder,
     // private readonly teacherSeeder: TeacherSeeder,
@@ -16,6 +18,7 @@ export class SeederService {
 
     try {
       // Execute seeders em ordem sequencial
+      await this.adminSeeder.seed();
       await this.userSeeder.seed();
       // await this.studentSeeder.seed();
       // await this.teacherSeeder.seed();
@@ -37,6 +40,7 @@ export class SeederService {
       // await this.teacherSeeder.drop();
       // await this.studentSeeder.drop();
       await this.userSeeder.drop();
+      await this.adminSeeder.drop();
 
       console.log('🎉 All data dropped successfully!\n');
     } catch (error) {
